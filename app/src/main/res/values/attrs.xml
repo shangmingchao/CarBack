@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PageStateView">
+        <attr name="loadingLayout" format="reference" />
+        <attr name="emptyIcon" format="reference" />
+        <attr name="emptyText" format="string" />
+        <attr name="errorIcon" format="reference" />
+        <attr name="errorText" format="string" />
+        <attr name="retryButtonText" format="string" />
+    </declare-styleable>
+</resources>

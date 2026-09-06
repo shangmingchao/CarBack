@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">CarBack</string>
+    <string name="app_name">Frank</string>
+    <string name="empty">Empty</string>
+    <string name="error">Error</string>
+    <string name="reload">Reload</string>
+    <string name="loading">Loading</string>
 </resources>
