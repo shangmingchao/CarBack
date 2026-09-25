@@ -31,8 +31,7 @@ import kotlinx.coroutines.supervisorScope
  * - 修复了 Fragment 在 ViewPager 等场景下无法懒加载的问题
  *
  * 注意：使用 BaseFragment 后尽量不要重载其生命周期方法（其方法回调不再可靠），
- * 而是使用 safeLifecycleOwner.lifecycle.addObserver()进行生命周期监听，
- * 可以使用其提供的 lazyLaunch/lazyLoad 和 startCollect() 方法进行懒加载和生命周期安全的数据收集
+ * 而是使用 safeLifecycleOwner.lifecycle.addObserver()进行生命周期监听
  *
  * @author shangmingchao
  */
@@ -40,7 +39,6 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
     FragmentBinding<VB> by FragmentBindingDelegate() {
 
     private val _visibilityFlow = MutableStateFlow<Boolean?>(null)
-    private var isLazyLoaded = false
 
     /**
      * 收集 Flow 时的统一异常兜底
@@ -96,35 +94,6 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
     }
 
     /**
-     * 页面可见时加载，使用于 ViewPager 数据懒加载，只加载一次
-     */
-    protected fun lazyLoad(block: SafeLifecycleOwner.() -> Unit) {
-        safeLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
-            override fun onResume(owner: LifecycleOwner) {
-                if (!isLazyLoaded) {
-                    isLazyLoaded = true
-                    block(safeLifecycleOwner)
-                }
-            }
-
-            override fun onDestroy(owner: LifecycleOwner) {
-                isLazyLoaded = false
-            }
-        })
-    }
-
-    /**
-     * 页面可见时启动协程，使用于 ViewPager 数据懒加载，只启动一次
-     */
-    protected inline fun lazyLaunch(crossinline block: suspend () -> Unit) {
-        lazyLoad {
-            lifecycleScope.launch {
-                block()
-            }
-        }
-    }
-
-    /**
      * 页面处于 [Lifecycle.State.RESUMED]（真正可见且可交互）时开始收集 Flow。
      *
      * 行为说明：
@@ -152,30 +121,8 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
         startRepeatCollect(Lifecycle.State.RESUMED, *collectors)
     }
 
-    /**
-     * 在指定的生命周期状态下收集 Flow，并自动在 DESTROYED 停止收集。
-     *
-     * 行为说明（与 [repeatOnLifecycle] 语义一致）：
-     * - 生命周期达到 [state] 时开始收集；
-     * - 生命周期降到 [state] 以下时取消当前收集；
-     * - 生命周期再次回升到 [state] 时重新收集；
-     * - 生命周期进入 DESTROYED 后永久停止收集，不会造成协程泄漏。
-     *
-     * 支持同时并发收集多个 Flow，例如只在 STARTED 状态以上收集：
-     * ```
-     * startRepeatCollect(
-     *     Lifecycle.State.STARTED,
-     *     { flow1.collect { ... } },
-     *     { flow2.collect { ... } },
-     * )
-     * ```
-     *
-     * @param state 触发收集的生命周期状态，需为 [Lifecycle.State.STARTED] 或
-     *              [Lifecycle.State.RESUMED]，不能为 [Lifecycle.State.INITIALIZED]。
-     * @param collectors 需要收集的挂起任务，每个都会被独立启动。
-     */
     @Suppress("SameParameterValue")
-    protected fun startRepeatCollect(
+    private fun startRepeatCollect(
         state: Lifecycle.State,
         vararg collectors: suspend CoroutineScope.() -> Unit,
     ) {
