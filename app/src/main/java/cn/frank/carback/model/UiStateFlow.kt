@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.channels.BufferOverflow
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * 刷新触发类型：区分下拉刷新与上拉加载更多
@@ -30,6 +32,11 @@ sealed interface RefreshTrigger {
      */
     data object LoadMore : RefreshTrigger
 }
+
+/**
+ * Success 状态的唯一 id 计数器，用于绕过 StateFlow 的去重
+ */
+private val UNIQUE_ID = AtomicLong(0L)
 
 /**
  * UI 状态封装
@@ -64,13 +71,16 @@ class UiStateFlow<T>(
  *
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-inline fun <reified T> uiStateFlow(
+fun <T> uiStateFlow(
     scope: CoroutineScope,
     emitLoadingOnStart: Boolean = true,
-    crossinline checkEmptyData: (T) -> Boolean = { it == null || (it is List<*> && it.isEmpty()) },
-    crossinline request: suspend (RefreshTrigger) -> Flow<T>,
+    checkEmptyData: (T) -> Boolean = { it == null || (it is List<*> && it.isEmpty()) },
+    request: suspend (RefreshTrigger) -> Flow<T>,
 ): UiStateFlow<T> {
-    val refreshTrigger = MutableSharedFlow<RefreshTrigger>(extraBufferCapacity = 1)
+    val refreshTrigger = MutableSharedFlow<RefreshTrigger>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
     val state = refreshTrigger
         .onStart { emit(RefreshTrigger.Refresh(emitLoadingOnStart)) }
         .flatMapLatest { trigger ->
@@ -86,7 +96,7 @@ inline fun <reified T> uiStateFlow(
                             } else {
                                 UiState.Success(
                                     result.data,
-                                    uniqueId = "${System.currentTimeMillis()}",
+                                    uniqueId = UNIQUE_ID.incrementAndGet().toString(),
                                     loadType = loadType,
                                 )
                             }

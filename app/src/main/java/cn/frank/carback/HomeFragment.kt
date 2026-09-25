@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import cn.frank.carback.adapter.HomePagerAdapter
 import cn.frank.carback.databinding.FragmentHomeBinding
+import cn.frank.carback.ext.dropSticky
 import cn.frank.carback.page.BaseFragment
 import cn.frank.carback.viewmodel.HomeViewModel
 import com.google.android.material.tabs.TabLayoutMediator
@@ -23,14 +24,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val tabFlow = viewModel.tabList.dropSticky()
         startCollect(
             {
-                viewModel.tabList.collect {
+                tabFlow.collect { tabs ->
                     tabLayoutMediator?.detach()
-                    binding.viewPager.adapter = HomePagerAdapter(this@HomeFragment, it)
+                    binding.viewPager.adapter = HomePagerAdapter(this@HomeFragment, tabs)
                     tabLayoutMediator =
                         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-                            tab.text = it[position].name
+                            tab.text = tabs[position].name
                         }.apply {
                             attach()
                         }

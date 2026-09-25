@@ -17,6 +17,7 @@ import androidx.core.view.NestedScrollingChildHelper
 import androidx.core.view.NestedScrollingParent3
 import androidx.core.view.NestedScrollingParentHelper
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import cn.frank.carback.R
 import cn.frank.carback.databinding.CommonPageEmptyBinding
 import cn.frank.carback.databinding.CommonPageErrorNetworkBinding
@@ -770,7 +771,7 @@ class PageStateView @JvmOverloads constructor(
 
     override fun onSaveInstanceState(): Parcelable? {
         val superState = super.onSaveInstanceState()
-        return SavedState(superState, currentState, visibility == VISIBLE)
+        return SavedState(superState, currentState, isVisible)
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
@@ -797,7 +798,7 @@ class PageStateView @JvmOverloads constructor(
         }
 
         constructor(source: Parcel) : super(source) {
-            pageState = State.values()[source.readInt()]
+            pageState = State.entries[source.readInt()]
             visible = source.readInt() == 1
         }
 

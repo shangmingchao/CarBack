@@ -18,9 +18,6 @@ fun <T> composePageState(
     retryAction: (() -> Unit)? = null,
     successAction: ((UiState.Success<T>) -> Unit)? = null,
 ) {
-    pageStateView.setOnRetryClickListener { v ->
-        retryAction?.invoke()
-    }
     when (state) {
         is UiState.Loading -> {
             contentView.visibility = View.GONE
@@ -41,6 +38,10 @@ fun <T> composePageState(
         }
 
         is UiState.Error -> {
+            // 仅错误态需要重试入口，避免每个状态都重复设置
+            pageStateView.setOnRetryClickListener {
+                retryAction?.invoke()
+            }
             if (contentView is SmartRefreshLayout) {
                 if (state.loadType == LoadType.Refresh) {
                     contentView.finishRefresh()

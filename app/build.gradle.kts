@@ -1,5 +1,3 @@
-import com.android.tools.r8.internal.ks
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)

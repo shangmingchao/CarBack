@@ -1,5 +1,6 @@
 package cn.frank.carback.model
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -19,7 +20,7 @@ sealed interface StateResult<out T> {
 /**
  * 将数据转换为带状态的结果
  */
-inline fun <reified T> Flow<T>.asStateResult(emitLoading: Boolean = true): Flow<StateResult<T>> {
+fun <T> Flow<T>.asStateResult(emitLoading: Boolean = true): Flow<StateResult<T>> {
     return this
         .map<T, StateResult<T>> {
             StateResult.Success(it)
@@ -29,7 +30,8 @@ inline fun <reified T> Flow<T>.asStateResult(emitLoading: Boolean = true): Flow<
                 emit(StateResult.Loading)
             }
         }
-        .catch {
-            emit(StateResult.Error(it))
+        .catch { e ->
+            if (e is CancellationException) throw e
+            emit(StateResult.Error(e))
         }
 }

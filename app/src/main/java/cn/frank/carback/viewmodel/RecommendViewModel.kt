@@ -1,5 +1,6 @@
 package cn.frank.carback.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import cn.frank.carback.model.home.ImageTextModel
 import cn.frank.carback.page.CommonListViewModel
@@ -33,8 +34,9 @@ class RecommendViewModel @Inject constructor(
             }.flowOn(Dispatchers.IO)
 
     private fun mockData(id: String, pageNo: Int): Flow<List<String>> = flow {
-        delay(1000)
+        delay(3000)
         val data = (1..20).map { "$id-$pageNo-$it" }
+        Log.d("aaaa", "emit: $data")
         emit(data)
     }
 }

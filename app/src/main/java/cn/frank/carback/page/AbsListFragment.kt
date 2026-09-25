@@ -1,9 +1,11 @@
 package cn.frank.carback.page
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import cn.frank.carback.ext.dropSticky
 import cn.frank.carback.model.LoadType
 import cn.frank.carback.recyclerview.CommonListAdapter
 import cn.frank.carback.recyclerview.ItemModel
@@ -28,25 +30,27 @@ abstract class AbsListFragment<VB : ViewBinding> : BaseFragment<VB>() {
         getRecyclerView().adapter = adapter
         getRefreshLayout().setOnRefreshLoadMoreListener(object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
-                viewModel.refresh()
+                viewModel.refresh(adapter.itemCount == 0)
             }
 
             override fun onLoadMore(refreshLayout: RefreshLayout) {
                 viewModel.loadMore()
             }
         })
-        lazyLaunch {
-            viewModel.listStateFlow.state.collect {
+        val stateFlow = viewModel.listStateFlow.state.dropSticky()
+        startCollect({
+            stateFlow.collect { state ->
+                Log.d("aaaa", "collect: $state")
                 composePageState(
-                    it,
+                    state,
                     getRefreshLayout(),
                     getPageStateView(),
-                    { viewModel.listStateFlow.refresh(true) },
+                    { viewModel.refresh(true) },
                 ) { success ->
                     onUpdateList(success.data, success.loadType == LoadType.Refresh)
                 }
             }
-        }
+        })
     }
 
     override fun onDestroyView() {
@@ -58,9 +62,6 @@ abstract class AbsListFragment<VB : ViewBinding> : BaseFragment<VB>() {
      * 更新列表
      */
     open fun onUpdateList(list: List<ItemModel>, isRefresh: Boolean) {
-        if (!isRefresh && list.isEmpty()) {
-            return
-        }
         adapter.submitList(list)
     }
 
