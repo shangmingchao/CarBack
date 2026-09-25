@@ -2,10 +2,16 @@
 <resources>
     <declare-styleable name="PageStateView">
         <attr name="loadingLayout" format="reference" />
+        <attr name="emptyLayout" format="reference" />
+        <attr name="errorLayout" format="reference" />
         <attr name="emptyIcon" format="reference" />
-        <attr name="emptyText" format="string" />
+        <attr name="emptyText" format="string|reference" />
         <attr name="errorIcon" format="reference" />
-        <attr name="errorText" format="string" />
-        <attr name="retryButtonText" format="string" />
+        <attr name="errorText" format="string|reference" />
+        <!-- 未知错误文案，未设置时复用 errorText -->
+        <attr name="unknownErrorText" format="string|reference" />
+        <attr name="retryButtonText" format="string|reference" />
+        <!-- 是否展示重试按钮 -->
+        <attr name="retryButtonVisible" format="boolean" />
     </declare-styleable>
 </resources>

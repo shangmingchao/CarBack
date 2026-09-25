@@ -19,11 +19,12 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 abstract class AbsListFragment<VB : ViewBinding> : BaseFragment<VB>() {
 
     abstract val viewModel: CommonListViewModel
-    protected val adapter = CommonListAdapter<ItemModel>()
+    open val adapter = CommonListAdapter<ItemModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerPresenter(adapter)
+        getRecyclerView().itemAnimator = null
         getRecyclerView().adapter = adapter
         getRefreshLayout().setOnRefreshLoadMoreListener(object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {

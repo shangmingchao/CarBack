@@ -20,7 +20,7 @@ abstract class CommonListViewModel : ViewModel() {
 
     protected var pageNo = FIRST_PAGE_NO
 
-    private val allData = mutableListOf<ItemModel>()
+    val allData = mutableListOf<ItemModel>()
 
     open val listStateFlow: UiStateFlow<List<ItemModel>> = uiStateFlow(viewModelScope) { trigger ->
         getListFlow(if (trigger is RefreshTrigger.Refresh) FIRST_PAGE_NO else pageNo).map { newList ->
@@ -41,8 +41,8 @@ abstract class CommonListViewModel : ViewModel() {
     /**
      * 下拉刷新
      */
-    fun refresh() {
-        listStateFlow.refresh(allData.isEmpty())
+    fun refresh(forceLoading: Boolean = false) {
+        listStateFlow.refresh(forceLoading || allData.isEmpty())
     }
 
     /**

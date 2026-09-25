@@ -7,7 +7,7 @@ import cn.frank.carback.model.home.ImageTextModel
 import cn.frank.carback.recyclerview.ItemPresenter
 
 /**
- *
+ * ImageTextPresenter for displaying image and text items
  *
  * @author shangmingchao
  */
