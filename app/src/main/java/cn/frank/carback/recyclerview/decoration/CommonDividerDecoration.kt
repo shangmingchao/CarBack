@@ -7,7 +7,7 @@ import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cn.frank.carback.utils.dp
+import cn.frank.carback.ext.dp
 import kotlin.math.roundToInt
 
 /**

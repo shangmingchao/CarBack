@@ -62,7 +62,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
             visibilityFlow = _visibilityFlow.filterNotNull()
         ).also { _safeLifecycleOwner = it }
 
-    override fun onCreateView(
+    final override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,27 +70,43 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
         return createViewWithBinding(inflater, container)
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
+    final override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             updateVisibility(isVisible = !hidden)
         }
     }
 
-    override fun onResume() {
+    final override fun onResume() {
         super.onResume()
         updateVisibility(isVisible = !isHidden)
     }
 
-    override fun onPause() {
+    final override fun onPause() {
         super.onPause()
         updateVisibility(isVisible = false)
     }
 
-    override fun onDestroyView() {
+    final override fun onStart() {
+        super.onStart()
+    }
+
+    final override fun onStop() {
+        super.onStop()
+    }
+
+    final override fun onDestroyView() {
+        onViewDestroy()
         super.onDestroyView()
         _safeLifecycleOwner = null
         _visibilityFlow.value = null
+    }
+
+    /**
+     * 视图销毁前的回调（[onDestroyView] 已被 final 禁止重写，子类如有清理逻辑请重写此方法）。
+     * 注意此时 ViewBinding 仍可用，调用顺序在 super.onDestroyView() 之前。
+     */
+    protected open fun onViewDestroy() {
     }
 
     /**

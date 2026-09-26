@@ -1,4 +1,4 @@
-package cn.frank.carback.viewmodel
+package cn.frank.carback
 
 import androidx.lifecycle.ViewModel
 import cn.frank.carback.model.home.Tab

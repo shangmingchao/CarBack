@@ -7,7 +7,7 @@ import cn.frank.carback.adapter.HomePagerAdapter
 import cn.frank.carback.databinding.FragmentHomeBinding
 import cn.frank.carback.ext.dropSticky
 import cn.frank.carback.page.BaseFragment
-import cn.frank.carback.viewmodel.HomeViewModel
+import cn.frank.carback.HomeViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 

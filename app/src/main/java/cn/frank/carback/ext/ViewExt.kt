@@ -1,7 +1,6 @@
-package cn.frank.carback.utils
+package cn.frank.carback.ext
 
 import android.content.res.Resources
-import kotlin.math.roundToInt
 
 /**
  * View 扩展

@@ -1,6 +1,8 @@
 package cn.frank.carback
 
 import android.os.Bundle
+import android.os.PersistableBundle
+import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -24,5 +26,21 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             FragmentRouter.push(HomeFragment(), tag = "/", animation = FragmentAnimation.NONE)
         }
+        onBackPressedDispatcher.addCallback(this) {
+            if (FragmentRouter.pop()) {
+                return@addCallback
+            }
+            finish()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        FragmentRouter.saveInstanceState(outState)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        FragmentRouter.release()
     }
 }

@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import cn.frank.carback.HomeFragment
-import cn.frank.carback.fragment.RecommendFragment
+import cn.frank.carback.recommend.RecommendFragment
 import cn.frank.carback.model.home.Tab
 
 /**

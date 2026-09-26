@@ -1,9 +1,11 @@
-package cn.frank.carback.presenter
+package cn.frank.carback.recommend.presenter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import cn.frank.carback.databinding.ItemImageTextBinding
+import cn.frank.carback.detail.list.DetailListFragment
 import cn.frank.carback.model.home.ImageTextModel
+import cn.frank.carback.navigation.FragmentRouter
 import cn.frank.carback.recyclerview.ItemPresenter
 
 /**
@@ -26,5 +28,8 @@ class ImageTextPresenter : ItemPresenter<ImageTextModel, ItemImageTextBinding> {
         position: Int
     ) {
         binding.tvTitle.text = model.data
+        binding.root.setOnClickListener {
+            FragmentRouter.push(DetailListFragment.newInstance(model.data))
+        }
     }
 }
