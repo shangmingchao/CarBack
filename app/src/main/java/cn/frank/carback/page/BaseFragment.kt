@@ -27,11 +27,11 @@ import kotlinx.coroutines.supervisorScope
  * 基础 Fragment
  *
  * - 修复了页面布局 ViewBinding 需要手动创建和销毁的问题
- * - 修复了 show/hide Fragment 时 onResume/onPause 没有按照预期执行的 Bug
+ * - 修复了 show/hide Fragment 时 onResume/onPause 没有按照预期执行的 Bug（请使用 safeLifecycleOwner 观察）
  * - 修复了 Fragment 在 ViewPager 等场景下无法懒加载的问题
  *
  * 注意：使用 BaseFragment 后尽量不要重载其生命周期方法（其方法回调不再可靠），
- * 而是使用 safeLifecycleOwner.lifecycle.addObserver()进行生命周期监听
+ * 而是使用 safeLifecycleOwner.lifecycle.addObserver() 进行生命周期监听
  *
  * @author shangmingchao
  */
@@ -61,6 +61,11 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
             hostLifecycle = this.viewLifecycleOwner.lifecycle,
             visibilityFlow = _visibilityFlow.filterNotNull()
         ).also { _safeLifecycleOwner = it }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+//        TheRouter.inject(this)
+    }
 
     final override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,7 +101,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
     }
 
     final override fun onDestroyView() {
-        onViewDestroy()
+        onViewWillDestroy()
         super.onDestroyView()
         _safeLifecycleOwner = null
         _visibilityFlow.value = null
@@ -106,7 +111,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
      * 视图销毁前的回调（[onDestroyView] 已被 final 禁止重写，子类如有清理逻辑请重写此方法）。
      * 注意此时 ViewBinding 仍可用，调用顺序在 super.onDestroyView() 之前。
      */
-    protected open fun onViewDestroy() {
+    protected open fun onViewWillDestroy() {
     }
 
     /**
@@ -130,20 +135,11 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
      * 未捕获的异常会被统一的 [collectorExceptionHandler] 捕获并记录日志，不会导致崩溃；
      * 若业务需要对异常做特定处理，仍建议在 collector 内部自行 try/catch。
      *
-     * @param collectors 需要收集的挂起任务，每个都会被独立启动。
-     * @see startRepeatCollect
+     * @param collectors 需要收集的挂起任务，每个都会被独立启动，每次页面重新可见都会执行
      */
     protected fun startCollect(vararg collectors: suspend CoroutineScope.() -> Unit) {
-        startRepeatCollect(Lifecycle.State.RESUMED, *collectors)
-    }
-
-    @Suppress("SameParameterValue")
-    private fun startRepeatCollect(
-        state: Lifecycle.State,
-        vararg collectors: suspend CoroutineScope.() -> Unit,
-    ) {
         safeLifecycleOwner.lifecycleScope.launch {
-            safeLifecycleOwner.repeatOnLifecycle(state) {
+            safeLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 supervisorScope {
                     collectors.forEach { collector ->
                         launch(collectorExceptionHandler) { collector() }

@@ -53,7 +53,7 @@ abstract class AbsListFragment<VB : ViewBinding> : BaseFragment<VB>() {
         })
     }
 
-    override fun onViewDestroy() {
+    override fun onViewWillDestroy() {
         getRecyclerView().adapter = null
     }
 

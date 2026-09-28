@@ -602,7 +602,8 @@ class PageStateView @JvmOverloads constructor(
         nestedScrollingChildHelper.isNestedScrollingEnabled = enabled
     }
 
-    override fun isNestedScrollingEnabled(): Boolean = nestedScrollingChildHelper.isNestedScrollingEnabled
+    override fun isNestedScrollingEnabled(): Boolean =
+        nestedScrollingChildHelper.isNestedScrollingEnabled
 
     override fun startNestedScroll(axes: Int): Boolean =
         nestedScrollingChildHelper.startNestedScroll(axes)
@@ -664,7 +665,8 @@ class PageStateView @JvmOverloads constructor(
         dy: Int,
         consumed: IntArray?,
         offsetInWindow: IntArray?
-    ): Boolean = nestedScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow)
+    ): Boolean =
+        nestedScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow)
 
     override fun dispatchNestedPreScroll(
         dx: Int,
@@ -675,7 +677,11 @@ class PageStateView @JvmOverloads constructor(
     ): Boolean =
         nestedScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type)
 
-    override fun dispatchNestedFling(velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
+    override fun dispatchNestedFling(
+        velocityX: Float,
+        velocityY: Float,
+        consumed: Boolean
+    ): Boolean =
         nestedScrollingChildHelper.dispatchNestedFling(velocityX, velocityY, consumed)
 
     override fun dispatchNestedPreFling(velocityX: Float, velocityY: Float): Boolean =
@@ -702,7 +708,8 @@ class PageStateView @JvmOverloads constructor(
         }
     }
 
-    override fun onStopNestedScroll(target: View) = onStopNestedScroll(target, ViewCompat.TYPE_TOUCH)
+    override fun onStopNestedScroll(target: View) =
+        onStopNestedScroll(target, ViewCompat.TYPE_TOUCH)
 
     override fun onStopNestedScroll(target: View, type: Int) {
         nestedScrollingParentHelper.onStopNestedScroll(target, type)
@@ -792,7 +799,11 @@ class PageStateView @JvmOverloads constructor(
         val pageState: State
         val visible: Boolean
 
-        constructor(superState: Parcelable?, pageState: State, visible: Boolean) : super(superState) {
+        constructor(
+            superState: Parcelable?,
+            pageState: State,
+            visible: Boolean
+        ) : super(superState) {
             this.pageState = pageState
             this.visible = visible
         }

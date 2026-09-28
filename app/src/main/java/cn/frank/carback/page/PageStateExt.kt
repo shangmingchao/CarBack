@@ -38,7 +38,6 @@ fun <T> composePageState(
         }
 
         is UiState.Error -> {
-            // 仅错误态需要重试入口，避免每个状态都重复设置
             pageStateView.setOnRetryClickListener {
                 retryAction?.invoke()
             }
