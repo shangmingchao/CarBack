@@ -91,11 +91,10 @@ class ExposureManager(private val reporter: ExposureReporter, private val config
         override fun doFrame(frameTimeNanos: Long) {
             if (!frameLoopRunning) return
             val now = SystemClock.elapsedRealtime()
-            Log.d(TAG, "帧检测中...")
             if (now - lastCheckTime >= config.checkIntervalMillis) {
                 lastCheckTime = now
                 runCatching { needsFramePrecision = checkAll(now) }
-                    .onFailure { Log.e(TAG, "曝光检测异常，已跳过本次检测") }
+                    .onFailure { Log.e(TAG, "曝光检测异常，已跳过本次检测", it) }
             }
             if (!needsFramePrecision) {
                 stopFrameLoop()
@@ -118,7 +117,7 @@ class ExposureManager(private val reporter: ExposureReporter, private val config
             if (destroyed || !resumed) return
             val now = SystemClock.elapsedRealtime()
             runCatching { needsFramePrecision = checkAll(now) }
-                .onFailure { Log.e(TAG, "曝光检测异常，已跳过本次检测") }
+                .onFailure { Log.e(TAG, "曝光检测异常，已跳过本次检测", it) }
             if (needsFramePrecision) {
                 startFrameLoopIfNeeded()
             } else {
@@ -236,12 +235,12 @@ class ExposureManager(private val reporter: ExposureReporter, private val config
             }
             return
         }
-        val item = items[view]
-            ?: TrackedItem(WeakReference(view), key, data, parentIndex, childIndex).also { items[view] = it }
-        item.key = key
-        item.data = data
-        item.parentIndex = parentIndex
-        item.childIndex = childIndex
+        val item = items[view]?.apply {
+            this.key = key
+            this.data = data
+            this.parentIndex = parentIndex
+            this.childIndex = childIndex
+        } ?: TrackedItem(WeakReference(view), key, data, parentIndex, childIndex).also { items[view] = it }
         resetDwell(item)
         startFrameLoopIfNeeded()
     }
@@ -324,6 +323,8 @@ class ExposureManager(private val reporter: ExposureReporter, private val config
         if (!resumed) return
         cancelIdleCheck()
         frameLoopRunning = true
+        lastCheckTime = 0L
+        needsFramePrecision = true
         choreographer.postFrameCallback(frameCallback)
     }
 
