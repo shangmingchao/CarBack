@@ -34,8 +34,8 @@ class DetailListViewModel @Inject constructor(
             }.flowOn(Dispatchers.IO)
 
     private fun mockData(id: String, pageNo: Int): Flow<List<String>> = flow {
-        delay(3000)
-        val data = (1..20).map { "$id-$pageNo-$it-${Random.nextInt(1000000000)}" }
+        delay(1000)
+        val data = (0..19).map { "$id-$pageNo-$it-${Random.nextInt(1000000000)}" }
         Log.d("aaaa", "emit: $data")
         emit(data)
     }

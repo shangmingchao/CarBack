@@ -35,10 +35,11 @@ import kotlinx.coroutines.supervisorScope
  *
  * @author shangmingchao
  */
-abstract class BaseFragment<VB : ViewBinding> : Fragment(),
+abstract class BaseFragment<VB : ViewBinding> :
+    Fragment(),
     FragmentBinding<VB> by FragmentBindingDelegate() {
 
-    private val _visibilityFlow = MutableStateFlow<Boolean?>(null)
+    private val visibilityState = MutableStateFlow<Boolean?>(null)
 
     /**
      * 收集 Flow 时的统一异常兜底
@@ -46,7 +47,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
     private val collectorExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.e(
             "BaseFragment",
-            "collector error：${throwable.message}"
+            "collector error：${throwable.message}",
         )
     }
 
@@ -59,7 +60,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
     val safeLifecycleOwner: SafeLifecycleOwner
         get() = _safeLifecycleOwner ?: SafeLifecycleOwner(
             hostLifecycle = this.viewLifecycleOwner.lifecycle,
-            visibilityFlow = _visibilityFlow.filterNotNull()
+            visibilityFlow = visibilityState.filterNotNull(),
         ).also { _safeLifecycleOwner = it }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,13 +68,8 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
 //        TheRouter.inject(this)
     }
 
-    final override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return createViewWithBinding(inflater, container)
-    }
+    final override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        createViewWithBinding(inflater, container)
 
     final override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
@@ -104,7 +100,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
         onViewWillDestroy()
         super.onDestroyView()
         _safeLifecycleOwner = null
-        _visibilityFlow.value = null
+        visibilityState.value = null
     }
 
     /**
@@ -150,15 +146,12 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(),
     }
 
     private fun updateVisibility(isVisible: Boolean) {
-        if (_visibilityFlow.value != isVisible) {
-            _visibilityFlow.value = isVisible
+        if (visibilityState.value != isVisible) {
+            visibilityState.value = isVisible
         }
     }
 
-    class SafeLifecycleOwner(
-        private val hostLifecycle: Lifecycle,
-        private val visibilityFlow: Flow<Boolean>
-    ) : LifecycleOwner {
+    class SafeLifecycleOwner(private val hostLifecycle: Lifecycle, private val visibilityFlow: Flow<Boolean>) : LifecycleOwner {
         private val lifecycleRegistry = LifecycleRegistry(this)
 
         override val lifecycle: Lifecycle = lifecycleRegistry
