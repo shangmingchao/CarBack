@@ -111,7 +111,7 @@ abstract class BaseFragment<VB : ViewBinding> :
     }
 
     /**
-     * 页面处于 [Lifecycle.State.RESUMED]（真正可见且可交互）时开始收集 Flow。
+     * 每次页面可见时开始收集 Flow。
      *
      * 行为说明：
      * - 生命周期降到 RESUMED 以下（ON_PAUSE）时自动暂停收集；
@@ -125,11 +125,6 @@ abstract class BaseFragment<VB : ViewBinding> :
      *     { flow2.collect { ... } },
      * )
      * ```
-     *
-     * 每个 collector 之间相互隔离：若其中某个抛出异常，仅该 collector 自身结束，
-     * 不会取消同批次其它 collector，也不会影响后续生命周期变化时的重新收集。
-     * 未捕获的异常会被统一的 [collectorExceptionHandler] 捕获并记录日志，不会导致崩溃；
-     * 若业务需要对异常做特定处理，仍建议在 collector 内部自行 try/catch。
      *
      * @param collectors 需要收集的挂起任务，每个都会被独立启动，每次页面重新可见都会执行
      */
@@ -171,8 +166,6 @@ abstract class BaseFragment<VB : ViewBinding> :
                     hostLifecycle.removeObserver(this)
                 }
             })
-
-            // 开始监听可见性变化
             collectionJob = hostLifecycle.coroutineScope.launch {
                 visibilityFlow.collect { visible ->
                     if (visible) {
