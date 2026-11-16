@@ -9,10 +9,21 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import cn.frank.carback.navigation.FragmentAnimation
 import cn.frank.carback.navigation.FragmentRouter
+import cn.frank.carback.route.Router
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * 主壳 Activity：三 Tab 装配（首页 / 我的 / 搜索）
+ *
+ * Tab 切换走 [Router.openTab]：Tab 页常驻且不进入返回栈（hide/show 保留页面状态），
+ * 返回键只在弹出普通压栈页面后才会退出应用。
+ *
+ * @author shangmingchao
+ */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -24,7 +35,28 @@ class MainActivity : AppCompatActivity() {
         }
         FragmentRouter.init(supportFragmentManager, R.id.homeContentContainer, savedInstanceState)
         if (savedInstanceState == null) {
-            FragmentRouter.push(HomeFragment(), tag = "/", animation = FragmentAnimation.NONE)
+            Router.openTab("home/main")
+        }
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.tabHome -> {
+                    Router.openTab("home/main")
+                    true
+                }
+
+                R.id.tabMine -> {
+                    Router.openTab("mine/main")
+                    true
+                }
+
+                R.id.tabSearch -> {
+                    Router.openTab("search/main")
+                    true
+                }
+
+                else -> false
+            }
         }
         onBackPressedDispatcher.addCallback(this) {
             if (FragmentRouter.pop()) {

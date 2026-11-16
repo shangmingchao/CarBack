@@ -1,0 +1,5 @@
+<resources>
+    <string name="search_hint">输入关键字搜索</string>
+    <string name="search_action">搜索</string>
+    <string name="search_empty_hint">未装配 :feature:home:impl，无可用列表 Adapter</string>
+</resources>

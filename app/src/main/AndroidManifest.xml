@@ -22,6 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- SDK 对外入口：第三方 APK 通过 CarBackSdk.openPage 拉起 -->
+        <activity
+            android:name=".SdkEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="cn.frank.carback.sdk.action.OPEN_PAGE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
