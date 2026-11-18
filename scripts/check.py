@@ -2,7 +2,7 @@
 """CarBack 架构静态一致性自检。
 
 检查项：
-1. 模块结构：settings.gradle.kts 与 16 个模块（app/sdk + core x5 + feature x9）一致；
+1. 模块结构：settings.gradle.kts 与 17 个模块（app/opensdk:api/opensdk:impl + core x5 + feature x9）一致；
 2. feature 三件套：每个 feature 均有 api/impl/demo 及各自 build.gradle.kts；
 3. impl 依赖守卫：任何 feature impl 的 build.gradle.kts 不得引用其他 feature 的 impl/demo；
 4. 路由唯一性：全部 @Route("...") 路径不得冲突；
@@ -30,8 +30,8 @@ def check_settings() -> None:
     settings = (ROOT / "settings.gradle.kts").read_text(encoding="utf-8")
     if 'include(":app")' not in settings:
         fail("settings.gradle.kts 缺少 :app")
-    if 'include(":sdk")' not in settings:
-        fail("settings.gradle.kts 缺少 :sdk")
+    if 'include(":opensdk:api")' not in settings or 'include(":opensdk:impl")' not in settings:
+        fail("settings.gradle.kts 缺少 :opensdk:api / :opensdk:impl")
     if 'listOf("common", "ui", "router", "router-compiler", "debug-scaffold")' not in settings:
         fail("settings.gradle.kts 缺少 core 五模块 include 循环")
     if 'listOf("home", "mine", "search")' not in settings or 'listOf("api", "impl", "demo")' not in settings:
@@ -109,8 +109,8 @@ def main() -> int:
         for error in ERRORS:
             print(f"  - {error}")
         return 1
-    modules = 2 + len(CORE_MODULES) + len(FEATURES) * len(VARIANTS)
-    print(f"check.py PASSED（{modules} 个模块：app/sdk + core x{len(CORE_MODULES)}"
+    modules = 3 + len(CORE_MODULES) + len(FEATURES) * len(VARIANTS)
+    print(f"check.py PASSED（{modules} 个模块：app/opensdk:api/opensdk:impl + core x{len(CORE_MODULES)}"
           f" + feature 三件套 x{len(FEATURES)}）")
     print("  - feature 三件套结构完整")
     print("  - impl 无跨 feature 依赖")

@@ -7,7 +7,7 @@
 - **失败前置**：路由路径冲突、服务重复注册在启动第一刻崩溃，不带到线上
 - **可插拔**：宿主少装一个 feature，调用方仍能编译并优雅降级
 - **UI 基建**：通用列表页、页面状态、生命周期修正、曝光埋点
-- **对外 SDK**：`sdk` 模块零内部依赖，可单独发布 AAR
+- **对外 SDK**：`opensdk:api`（纯契约）+ `opensdk:impl`（装配层）双层隔离，契约可独立发布 AAR
 
 > 工程内数据均为内存 mock，重点在架构骨架而非完整业务。
 
@@ -26,13 +26,18 @@
 
 # 架构一致性自检（模块结构 / 依赖守卫 / 路由唯一性）
 python3 scripts/check.py
+
+# 打包对外 SDK AAR（opensdk/api 与 opensdk/impl，详见 opensdk/README.md 第 9 节）
+./gradlew :opensdk:api:assembleRelease :opensdk:impl:assembleRelease
 ```
 
 ## 模块结构
 
 ```
-app                        主壳：装配 feature impl + 底部导航 + SDK 入口 Activity
-sdk                        对外契约（可独立发 AAR）：CarBackSdk / SdkContract
+app                        主壳：装配 feature impl + 底部导航
+opensdk/
+  api                      对外契约（可独立发 AAR，零内部依赖）：Sdk / SdkTrack / SdkTrackProvider / SdkUi
+  impl                     SDK 装配层：反射桥接 / 模型裁剪 / Fragment 工厂（implementation 隐藏内部模块）
 core/
   common                   模型、UiState/UiStateFlow、EventBus、ServiceRegistry
   ui                       BaseFragment、通用列表页、CommonListAdapter、PageStateView
@@ -53,8 +58,10 @@ app ──► feature:home:impl ──► feature:home:api
  │            └─► core:ui / core:router / core:common
  ├─► feature:mine:impl ──► feature:mine:api
  ├─► feature:search:impl ──► feature:search:api ──► feature:home:api（复用 View 级契约）
- └─► sdk
+ └─► 不依赖任何 opensdk 模块（SDK 是纯导出通道）
 ```
+
+SDK 边界：`:opensdk:impl` 通过 `implementation` 依赖 core/feature 模块，第三方编译类路径上只有 `:opensdk:api` 的门面契约；主壳**不依赖任何 opensdk 模块**——SDK 是对外的导出通道，宿主只提供页面与数据，不消费门面。
 
 ## 设计原理
 
@@ -148,7 +155,14 @@ impl 模块     @Provides @IntoSet fun ...(impl: MineApiImpl): FeatureApi
 
 ### 7. 对外 SDK
 
-`sdk` 模块不依赖任何内部模块，只暴露 `SdkContract`（Action / Extra / 宿主类名）与门面 `CarBackSdk`。宿主侧的 `SdkEntryActivity`（`exported`）校验路由后交给 `Router` 打开页面。第三方调用前会先 `resolveActivity`，宿主未安装时返回 `false`，便于引导下载。
+SDK 按 README 方案拆为两层（模块名与物理目录一致）：
+
+- `:opensdk:api`（`opensdk/api`）：纯契约，零内部依赖——SDK 专属模型 `SdkTrack`、只读数据门面 `SdkTrackProvider`（不含写入口）、UI 门面 `SdkUi`、统一入口 `Sdk`（反射绑定实现）。
+- `:opensdk:impl`（`opensdk/impl`）：装配层——`SdkBridgeImpl` 完成反射绑定与 `Bootstrap.install`；`SdkTrackProviderImpl` 把内部 `MineApi` / `SearchApi` 经 `toSdkTrack()` 编译期裁剪为 `SdkTrack` 子集；`SdkUiImpl` 经 `Router` 查表创建 Fragment，第三方只拿到 `Fragment` 基类引用。
+
+主壳 `:app` **不依赖任何 opensdk 模块**（对应通用方案"app:prod 不依赖 opensdk"的原则）：SDK 仅支持第三方同进程集成，不支持跨进程拉起宿主页面（无 exported 入口 Activity、无跨进程门面）。
+
+第三方编译类路径上只有 `:opensdk:api`；`:opensdk:impl` 对 core / feature 的依赖全部是 `implementation`，配合 `consumer-rules.pro` 只 keep 门面契约。发布时按 `opensdk/README.md` 第 5 节以 Fused / Fat AAR 融合为单个 AAR。
 
 ## 如何使用
 
@@ -295,13 +309,19 @@ class PlayerListFragment : CommonListFragment() {
 
 ### 对外 SDK
 
+SDK 仅提供**同进程集成**（不支持跨进程拉起宿主页面）。第三方 App 依赖 `opensdk:api` 契约 + 融合后的 `opensdk:impl` AAR（Application 需为 `@HiltAndroidApp`）：
+
 ```kotlin
-// 第三方 APK：依赖 sdk AAR 后拉起宿主页面
-CarBackSdk.openPage(context, "search/main")
-CarBackSdk.openHostMarket(context)   // 宿主未安装时引导下载
+Sdk.init(this)                       // Application.onCreate 中，反射绑定 :opensdk:impl
+
+val provider = Sdk.trackProvider()   // 只读数据门面
+lifecycleScope.launch { provider.listenHistory.collect { tracks -> ... } }
+
+val fragment = Sdk.ui().createPageFragment("search/main")   // Fragment 基类引用
+supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
 ```
 
-同进程集成（与宿主同渠道分发）可直接依赖 `core:router` + 目标 feature 的 `impl`，在 `Application.onCreate` 中调用 `Bootstrap.install(this)` 后使用 `Router` / `ServiceRegistry` / `EventBus`。
+第三方看不到 `MineApi` / `SearchApi` / feature Fragment 具体类型，也拿不到写入口（record / clearHistory 不在 SDK 契约中）。
 
 ## 约定
 

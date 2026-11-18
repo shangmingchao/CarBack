@@ -23,7 +23,8 @@ dependencyResolutionManagement {
 rootProject.name = "CarBack"
 
 include(":app")
-include(":sdk")
+include(":opensdk:api")
+include(":opensdk:impl")
 
 // 基础设施层：common / ui / router / router-compiler / debug-scaffold
 listOf("common", "ui", "router", "router-compiler", "debug-scaffold").forEach {

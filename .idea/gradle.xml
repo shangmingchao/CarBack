@@ -42,7 +42,9 @@
             <option value="$PROJECT_DIR$/feature/search/api" />
             <option value="$PROJECT_DIR$/feature/search/demo" />
             <option value="$PROJECT_DIR$/feature/search/impl" />
-            <option value="$PROJECT_DIR$/sdk" />
+            <option value="$PROJECT_DIR$/opensdk" />
+            <option value="$PROJECT_DIR$/opensdk/api" />
+            <option value="$PROJECT_DIR$/opensdk/impl" />
           </set>
         </option>
       </GradleProjectSettings>

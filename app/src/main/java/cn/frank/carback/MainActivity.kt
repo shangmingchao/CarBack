@@ -14,10 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * 主壳 Activity：三 Tab 装配（首页 / 我的 / 搜索）
- *
- * Tab 切换走 [Router.openTab]：Tab 页常驻且不进入返回栈（hide/show 保留页面状态），
- * 返回键只在弹出普通压栈页面后才会退出应用。
+ * 主壳 Activity
  *
  * @author shangmingchao
  */
