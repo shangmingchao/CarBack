@@ -91,14 +91,6 @@ object Router {
         )
     }
 
-    /**
-     * Tab 切换语义：Tab 页常驻且不进入返回栈（hide/show 保留视图状态）；
-     * 切换时丢弃返回栈中的普通页面，重复点击当前 Tab 回到 Tab 根页面
-     */
-    fun openTab(path: String) {
-        FragmentRouter.switchTab(path) { fragment(path) }
-    }
-
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface RouterEntryPoint {

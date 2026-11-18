@@ -1,4 +1,4 @@
-package cn.frank.carback.feature.home.impl.recommend
+package cn.frank.carback.feature.home.impl.recommend.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import cn.frank.carback.feature.home.impl.model.home.ImageTextModel
@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import kotlin.collections.map
 import kotlin.random.Random
 
 /**
@@ -34,6 +35,6 @@ class RecommendViewModel @Inject constructor(
 
     private fun mockData(id: String, pageNo: Int): Flow<List<String>> = flow {
         delay(3000)
-        emit((1..20).map { "$id-$pageNo-$it-${Random.nextInt(1000000000)}" })
+        emit((1..20).map { "$id-$pageNo-$it-${Random.Default.nextInt(1000000000)}" })
     }
 }

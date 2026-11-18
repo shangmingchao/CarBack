@@ -9,6 +9,7 @@ import cn.frank.carback.feature.home.impl.manager.ExposureRecord
 import cn.frank.carback.feature.home.impl.manager.ExposureReporter
 import cn.frank.carback.page.CommonListFragment
 import cn.frank.carback.feature.home.impl.recommend.presenter.ImageTextPresenter
+import cn.frank.carback.feature.home.impl.recommend.viewmodel.RecommendViewModel
 import cn.frank.carback.recyclerview.CommonListAdapter
 import cn.frank.carback.recyclerview.ItemModel
 import cn.frank.carback.recyclerview.decoration.CommonSpacingDecoration

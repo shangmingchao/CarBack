@@ -49,7 +49,7 @@ class FragmentBindingDelegate<VB : ViewBinding> : FragmentBinding<VB> {
     }
 }
 
-
+@Suppress("UNCHECKED_CAST")
 fun <VB : ViewBinding> inflateWithGeneric(
     genericOwner: Any,
     layoutInflater: LayoutInflater,
@@ -67,6 +67,7 @@ fun <VB : ViewBinding> inflateWithGeneric(
     }
 
 
+@Suppress("UNCHECKED_CAST")
 private fun <VB : ViewBinding> withGenericBindingClass(
     genericOwner: Any,
     block: (Class<VB>) -> VB

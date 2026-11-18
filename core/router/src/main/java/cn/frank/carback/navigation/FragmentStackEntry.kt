@@ -10,4 +10,5 @@ import androidx.fragment.app.Fragment
 data class FragmentStackEntry(
     val fragment: Fragment,
     val tag: String,
+    val animation: FragmentAnimation = FragmentAnimation.SLIDE_IN_RIGHT,
 )

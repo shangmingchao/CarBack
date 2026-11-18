@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import cn.frank.carback.feature.home.impl.HomeFragment
 import cn.frank.carback.navigation.FragmentAnimation
 import cn.frank.carback.navigation.FragmentRouter
 import cn.frank.carback.route.Router
@@ -25,35 +26,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.homeContentContainer)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
         FragmentRouter.init(supportFragmentManager, R.id.homeContentContainer, savedInstanceState)
         if (savedInstanceState == null) {
-            Router.openTab("home/main")
-        }
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.tabHome -> {
-                    Router.openTab("home/main")
-                    true
-                }
-
-                R.id.tabMine -> {
-                    Router.openTab("mine/main")
-                    true
-                }
-
-                R.id.tabSearch -> {
-                    Router.openTab("search/main")
-                    true
-                }
-
-                else -> false
-            }
+            Router.open("home/main", animation = FragmentAnimation.NONE)
         }
         onBackPressedDispatcher.addCallback(this) {
             if (FragmentRouter.pop()) {
@@ -63,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         FragmentRouter.saveInstanceState(outState)
     }
 
