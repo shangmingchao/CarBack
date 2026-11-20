@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 ERRORS = []
-CORE_MODULES = ["common", "ui", "router", "router-compiler", "debug-scaffold"]
+CORE_MODULES = ["model", "ui", "router", "router-compiler", "debug-scaffold"]
 FEATURES = ["home", "mine", "search"]
 VARIANTS = ["api", "impl", "demo"]
 
@@ -32,7 +32,7 @@ def check_settings() -> None:
         fail("settings.gradle.kts 缺少 :app")
     if 'include(":opensdk:api")' not in settings or 'include(":opensdk:impl")' not in settings:
         fail("settings.gradle.kts 缺少 :opensdk:api / :opensdk:impl")
-    if 'listOf("common", "ui", "router", "router-compiler", "debug-scaffold")' not in settings:
+    if 'listOf("model", "ui", "router", "router-compiler", "debug-scaffold")' not in settings:
         fail("settings.gradle.kts 缺少 core 五模块 include 循环")
     if 'listOf("home", "mine", "search")' not in settings or 'listOf("api", "impl", "demo")' not in settings:
         fail("settings.gradle.kts 缺少 feature 三件套 include 循环")
