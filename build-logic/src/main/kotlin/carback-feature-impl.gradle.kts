@@ -5,7 +5,7 @@ import org.gradle.api.artifacts.ProjectDependency
 /**
  * feature impl 模块：业务实现。
  *
- * - 自动依赖 core 三件套（common / ui / router）+ Hilt + KSP 路由编译器；
+ * - 自动依赖 core（model / ui / router）+ Hilt + KSP 路由编译器；
  * - KSP 自动注入 router.moduleName，生成 "<Feature>ImplRouterModule" 装配代码；
  * - 【编译期守卫】禁止依赖任何其他 feature 的 impl / demo 模块，
  *   跨 feature 只允许依赖对方的 :api 模块，违规直接构建失败。
@@ -24,9 +24,11 @@ val featureName = project.path
     .replace('-', '.')
 
 dependencies {
-    add("api", project(":core:common"))
+    // Model / Router（ServiceRegistry / FeatureApi）仅本模块编译需要，不对外传递
+    add("implementation", project(":core:model"))
+    add("implementation", project(":core:router"))
+    // Fragment 基类 / 通用列表组件随公共签名暴露给消费方（app / demo / opensdk）
     add("api", project(":core:ui"))
-    add("api", project(":core:router"))
     // 本 feature 的契约模块
     add("api", project(":feature:$featureName:api"))
     add("ksp", project(":core:router-compiler"))

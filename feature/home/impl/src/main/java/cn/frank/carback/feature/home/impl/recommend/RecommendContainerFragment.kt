@@ -10,6 +10,7 @@ import cn.frank.carback.feature.home.impl.recommend.viewmodel.RecommendContainer
 import cn.frank.carback.feature.mine.api.MineApi
 import cn.frank.carback.page.BaseFragment
 import cn.frank.carback.route.Route
+import cn.frank.carback.route.Router
 import cn.frank.carback.service.ServiceRegistry
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +29,9 @@ class RecommendContainerFragment : BaseFragment<FragmentRecommendContainerBindin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.ivSearch.setOnClickListener {
+            Router.navigate("search/main")
+        }
         val tabs = viewModel.tabs
         binding.viewPager.adapter = RecommendPagerAdapter(this, tabs)
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->

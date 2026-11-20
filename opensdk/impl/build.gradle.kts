@@ -31,7 +31,7 @@ dependencies {
     api(project(":opensdk:api"))
 
     // 内部装配：implementation 依赖，不进入第三方编译类路径
-    implementation(project(":core:common"))
+    implementation(project(":core:model"))
     implementation(project(":core:router"))
     implementation(project(":feature:home:impl"))
     implementation(project(":feature:mine:impl"))

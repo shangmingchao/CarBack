@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
     api(project(":core:router"))
-    implementation(project(":core:common"))
 
     implementation(libs.material)
     implementation(libs.androidx.core.ktx)

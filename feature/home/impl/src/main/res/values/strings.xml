@@ -1,3 +1,4 @@
 <resources>
     <string name="home_recent_listen">最近收听：%1$s</string>
+    <string name="home_detail">详情</string>
 </resources>

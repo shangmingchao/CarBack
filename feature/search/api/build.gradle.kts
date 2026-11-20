@@ -3,6 +3,5 @@ plugins {
 }
 
 dependencies {
-    // TrackUiItem 出现在 SearchApi 的公开签名中，必须用 api 传递（api -> api 允许）
-    api(project(":feature:home:api"))
+    // 曲目 Model 来自 :core:model（feature-api 插件已 api 注入），不再依赖 home 契约
 }

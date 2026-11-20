@@ -1,12 +1,11 @@
 package cn.frank.carback.opensdk.impl
 
-import cn.frank.carback.feature.home.api.TrackUiItem
 import cn.frank.carback.feature.mine.api.MineApi
-import cn.frank.carback.feature.mine.api.TrackItem
 import cn.frank.carback.feature.search.api.SearchApi
 import cn.frank.carback.opensdk.api.SdkTrack
 import cn.frank.carback.opensdk.api.SdkTrackProvider
 import cn.frank.carback.service.ServiceRegistry
+import cn.frank.carback.shared.model.TrackModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -46,14 +45,7 @@ internal object SdkTrackProviderImpl : SdkTrackProvider {
             ?: emptyList()
 }
 
-private fun TrackItem.toSdkTrack(): SdkTrack = SdkTrack(
+private fun TrackModel.toSdkTrack(): SdkTrack = SdkTrack(
     id = id,
     title = title,
-    artist = artist,
-)
-
-private fun TrackUiItem.toSdkTrack(): SdkTrack = SdkTrack(
-    id = id,
-    title = title,
-    artist = artist,
 )

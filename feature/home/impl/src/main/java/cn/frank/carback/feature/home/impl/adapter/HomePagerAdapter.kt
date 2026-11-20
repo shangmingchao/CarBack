@@ -17,7 +17,10 @@ class HomePagerAdapter(
     private val tabList: List<Tab>,
 ) : FragmentStateAdapter(fragment) {
 
-    override fun createFragment(position: Int): Fragment = Router.fragment(tabList[position].id)
+    override fun createFragment(position: Int): Fragment =
+        // tabs 已在 HomeViewModel 中经 Router.hasRoute 过滤，此处缺失仅可能是逻辑错误
+        Router.fragment(tabList[position].id)
+            ?: error("Tab 路由未装配：${tabList[position].id}")
 
     override fun getItemCount(): Int = tabList.size
 }

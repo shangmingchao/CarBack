@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
-import cn.frank.carback.feature.home.impl.manager.ExposureManager
-import cn.frank.carback.feature.home.impl.manager.ExposureRecord
-import cn.frank.carback.feature.home.impl.manager.ExposureReporter
-import cn.frank.carback.page.CommonListFragment
-import cn.frank.carback.feature.home.impl.recommend.presenter.ImageTextPresenter
+import cn.frank.carback.feature.home.impl.adapter.SongListAdapter
 import cn.frank.carback.feature.home.impl.recommend.viewmodel.RecommendViewModel
+import cn.frank.carback.page.CommonListFragment
 import cn.frank.carback.recyclerview.CommonListAdapter
 import cn.frank.carback.recyclerview.ItemModel
 import cn.frank.carback.recyclerview.decoration.CommonSpacingDecoration
 import cn.frank.carback.recyclerview.decoration.setItemDecoration
+import cn.frank.carback.track.ExposureManager
+import cn.frank.carback.track.ExposureRecord
+import cn.frank.carback.track.ExposureReporter
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -36,13 +36,13 @@ class RecommendFragment : CommonListFragment() {
 
     override val viewModel: RecommendViewModel by viewModels()
 
+    override val adapter: CommonListAdapter<ItemModel> = SongListAdapter(exposureManager)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerView.setItemDecoration(CommonSpacingDecoration())
         exposureManager.bindLifecycle(safeLifecycleOwner)
     }
 
-    override fun registerPresenter(adapter: CommonListAdapter<ItemModel>) {
-        adapter.register(ImageTextPresenter(exposureManager))
-    }
+    override fun registerPresenter(adapter: CommonListAdapter<ItemModel>) = Unit
 }

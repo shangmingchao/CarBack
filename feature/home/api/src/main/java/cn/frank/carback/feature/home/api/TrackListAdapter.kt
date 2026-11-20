@@ -1,6 +1,8 @@
 package cn.frank.carback.feature.home.api
 
-import androidx.recyclerview.widget.RecyclerView
+import cn.frank.carback.recyclerview.CommonListAdapter
+import cn.frank.carback.recyclerview.ItemModel
+import cn.frank.carback.shared.model.TrackModel
 
 /**
  * 曲目列表 Adapter 抽象契约
@@ -9,12 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
  * 拿到 Adapter 直接 set 到 RecyclerView 上屏，零列表 UI 代码；
  * 条目布局、DiffUtil、点击行为全部由 :feature:home:impl 决定。
  *
+ * 提交 [TrackModel]（跨模块数据契约）而非 [ItemModel]（UI 层标记），
+ * 数据模型到 UI 条目的转换收敛在 home 实现内部。
+ *
  * @author shangmingchao
  */
-abstract class TrackListAdapter<VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
+abstract class TrackListAdapter : CommonListAdapter<ItemModel>() {
 
     /**
-     * 提交一批曲目数据（含 diff 刷新契约）
+     * 提交一批曲目数据
      */
-    abstract fun submitList(items: List<TrackUiItem>)
+    abstract fun submitTracks(items: List<TrackModel>)
 }

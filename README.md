@@ -39,9 +39,9 @@ opensdk/
   api                      对外契约（可独立发 AAR，零内部依赖）：Sdk / SdkTrack / SdkTrackProvider / SdkUi
   impl                     SDK 装配层：反射桥接 / 模型裁剪 / Fragment 工厂（implementation 隐藏内部模块）
 core/
-  common                   模型、UiState/UiStateFlow、EventBus、ServiceRegistry
+  model                    TrackModel、UiState/UiStateFlow/StateResult
   ui                       BaseFragment、通用列表页、CommonListAdapter、PageStateView
-  router                   @Route、Router、FragmentRouter（自维护返回栈）
+  router                   @Route、Router、FragmentRouter、FeatureApi/ServiceRegistry（服务注册中心）
   router-compiler          KSP 处理器：生成 <Feature>ImplRouterModule
   debug-scaffold           demo 壳通用 Application / Activity
 feature/<name>/
@@ -55,7 +55,7 @@ feature/<name>/
 ```
 app ──► feature:home:impl ──► feature:home:api
  │            ├─► feature:mine:api      （只认契约）
- │            └─► core:ui / core:router / core:common
+ │            └─► core:ui / core:router / core:model
  ├─► feature:mine:impl ──► feature:mine:api
  ├─► feature:search:impl ──► feature:search:api ──► feature:home:api（复用 View 级契约）
  └─► 不依赖任何 opensdk 模块（SDK 是纯导出通道）
@@ -69,7 +69,7 @@ SDK 边界：`:opensdk:impl` 通过 `implementation` 依赖 core/feature 模块�
 
 | 模块 | 职责 | 允许依赖 |
 | --- | --- | --- |
-| `api` | 对外契约、事件、跨模块展示模型 | `core:common`、其他 `api` |
+| `api` | 对外契约、事件、跨模块展示模型 | `core:model` / `core:router`、其他 `api` |
 | `impl` | 页面、ViewModel、仓库、Hilt 注册 | 自己的 `api`、其他 `api`、`core:*` |
 | `demo` | 独立可运行壳，只装自己的 `impl` | `core:debug-scaffold` |
 
@@ -122,7 +122,7 @@ impl 模块     @Provides @IntoSet fun ...(impl: MineApiImpl): FeatureApi
 - show/hide 切换时 Fragment 不会回调 `onResume/onPause`，`safeLifecycleOwner` 把"宿主生命周期 + 页面可见性"合成为可靠生命周期；
 - `startCollect { }` 统一在 `RESUMED` 时收集、`PAUSED` 时暂停、`DESTROYED` 后永久停止；多个 Flow 在 `supervisorScope` 中并行，单条异常只记录日志，不影响其他订阅。
 
-**UiStateFlow**（`core:common`）
+**UiStateFlow**（`core:model`）
 
 - `UiState`：`Loading / Success / Error`，`LoadType` 区分刷新与加载更多；
 - `RefreshTrigger` 经 `flatMapLatest` 合并请求，新请求自动取消旧请求；`asStateResult` 统一捕获异常、发 Loading；
@@ -146,7 +146,7 @@ impl 模块     @Provides @IntoSet fun ...(impl: MineApiImpl): FeatureApi
 | `carback-android-application` | SDK 版本、Java 17、ViewBinding、namespace 推导 |
 | `carback-android-library` | 同上（library 版） |
 | `carback-android-hilt` | Hilt 插件 + 运行时 + KSP 编译器 |
-| `carback-feature-api` | 契约模块默认依赖（`core:common` + coroutines） |
+| `carback-feature-api` | 契约模块默认依赖（`core:model` / `core:router`，implementation） |
 | `carback-feature-impl` | core 三件套 + 自有 api + 路由 KSP + **跨 feature 依赖守卫** |
 | `carback-feature-demo` | application + hilt + `core:debug-scaffold`，开箱即可运行 |
 | `carback-kotlin-jvm` | 纯 JVM 模块（KSP 处理器） |

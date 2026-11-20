@@ -22,7 +22,13 @@ import cn.frank.carback.service.ServiceRegistry
  */
 object Bootstrap {
 
-    fun install(context: Context) {
+    /**
+     * @param lenientRoutes 宽松模式：路由未装配时优雅降级而非快速失败崩溃。
+     *   仅 demo 壳（独立编译运行，classpath 上只有本 feature impl）应传 true；
+     *   生产壳保持默认 false，路由缺失在第一跳快速失败。
+     */
+    fun install(context: Context, lenientRoutes: Boolean = false) {
+        Router.lenient = lenientRoutes
         Router.init(context)
         ServiceRegistry.init(context)
     }

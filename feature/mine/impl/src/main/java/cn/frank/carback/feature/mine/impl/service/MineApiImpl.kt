@@ -1,7 +1,7 @@
 package cn.frank.carback.feature.mine.impl.service
 
 import cn.frank.carback.feature.mine.api.MineApi
-import cn.frank.carback.feature.mine.api.TrackItem
+import cn.frank.carback.shared.model.TrackModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,24 +19,18 @@ import javax.inject.Singleton
 @Singleton
 class MineApiImpl @Inject constructor() : MineApi {
 
-    private val history = MutableStateFlow(
-        listOf(
-            TrackItem("mock-1", "夜空中最亮的星", "逃跑计划"),
-            TrackItem("mock-2", "平凡之路", "朴树"),
-            TrackItem("mock-3", "海阔天空", "Beyond"),
-        ),
-    )
+    private val _history = MutableStateFlow<List<TrackModel>>(emptyList())
 
-    override val listenHistory: StateFlow<List<TrackItem>> = history.asStateFlow()
+    override val listenHistory: StateFlow<List<TrackModel>> = _history.asStateFlow()
 
-    override fun record(track: TrackItem) {
-        history.update { current ->
+    override fun record(track: TrackModel) {
+        _history.update { current ->
             (listOf(track) + current.filterNot { it.id == track.id }).take(MAX_SIZE)
         }
     }
 
     override fun clearHistory() {
-        history.value = emptyList()
+        _history.value = emptyList()
     }
 
     private companion object {

@@ -24,6 +24,8 @@ abstract class BaseDemoApplication : Application() {
         SmartRefreshLayout.setDefaultRefreshFooterCreator { _, _ ->
             ClassicsFooter(this@BaseDemoApplication)
         }
-        Bootstrap.install(this)
+        // demo 独立编译运行时 classpath 上只有本 feature impl，
+        // 未装配路由（跳转到其它 feature）降级忽略，而非 "No @Route registered" 崩溃
+        Bootstrap.install(this, lenientRoutes = true)
     }
 }

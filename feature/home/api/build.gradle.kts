@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    // TrackListAdapter 继承 RecyclerView.Adapter
+    api(project(":core:ui"))
     api(libs.androidx.recyclerview)
 }

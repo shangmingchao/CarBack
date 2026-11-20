@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         }
         FragmentRouter.init(supportFragmentManager, R.id.homeContentContainer, savedInstanceState)
         if (savedInstanceState == null) {
-            Router.open("home/main", animation = FragmentAnimation.NONE)
+            Router.navigate("home/main", animation = FragmentAnimation.NONE)
         }
         onBackPressedDispatcher.addCallback(this) {
             if (FragmentRouter.pop()) {

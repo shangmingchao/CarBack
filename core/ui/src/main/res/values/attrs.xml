@@ -14,4 +14,8 @@
         <!-- 是否展示重试按钮 -->
         <attr name="retryButtonVisible" format="boolean" />
     </declare-styleable>
+    <declare-styleable name="TitleBar">
+        <attr name="title" format="string" />
+        <attr name="navBackIcon" format="reference" />
+    </declare-styleable>
 </resources>

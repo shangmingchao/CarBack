@@ -1,7 +1,7 @@
 package cn.frank.carback.feature.search.impl
 
-import cn.frank.carback.feature.home.api.TrackUiItem
 import cn.frank.carback.feature.search.api.SearchApi
+import cn.frank.carback.shared.model.TrackModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,14 +13,13 @@ import javax.inject.Singleton
 @Singleton
 class SearchApiImpl @Inject constructor() : SearchApi {
 
-    override fun search(keyword: String): List<TrackUiItem> =
+    override fun search(keyword: String): List<TrackModel> =
         SEARCH_SOURCE
             .filter { keyword.isBlank() || it.contains(keyword, ignoreCase = true) }
             .map { source ->
-                TrackUiItem(
-                    id = "search_${source.hashCode()}",
+                TrackModel(
+                    id = "${source.hashCode()}",
                     title = source,
-                    artist = "搜索结果",
                 )
             }
 

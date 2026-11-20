@@ -26,8 +26,8 @@ include(":app")
 include(":opensdk:api")
 include(":opensdk:impl")
 
-// 基础设施层：common / ui / router / router-compiler / debug-scaffold
-listOf("common", "ui", "router", "router-compiler", "debug-scaffold").forEach {
+// 基础设施层：model / ui / router / router-compiler / debug-scaffold
+listOf("model", "ui", "router", "router-compiler", "debug-scaffold").forEach {
     include(":core:$it")
 }
 

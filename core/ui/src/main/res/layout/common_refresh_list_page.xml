@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:background="@color/black">
 
-    <androidx.appcompat.widget.Toolbar
+    <cn.frank.carback.page.TitleBar
         android:id="@+id/titleBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

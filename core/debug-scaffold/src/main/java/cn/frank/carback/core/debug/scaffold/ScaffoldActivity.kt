@@ -45,7 +45,7 @@ abstract class ScaffoldActivity : AppCompatActivity() {
         }
         FragmentRouter.init(supportFragmentManager, R.id.scaffoldContainer, savedInstanceState)
         if (savedInstanceState == null) {
-            Router.open(startRoute, animation = FragmentAnimation.NONE)
+            Router.navigate(startRoute, animation = FragmentAnimation.NONE)
         }
         onBackPressedDispatcher.addCallback(this) {
             if (FragmentRouter.pop()) {

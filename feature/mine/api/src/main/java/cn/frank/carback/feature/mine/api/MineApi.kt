@@ -1,6 +1,7 @@
 package cn.frank.carback.feature.mine.api
 
 import cn.frank.carback.service.FeatureApi
+import cn.frank.carback.shared.model.TrackModel
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -16,12 +17,12 @@ interface MineApi : FeatureApi {
     /**
      * 收听历史（响应式，数据变化自动通知所有订阅方）
      */
-    val listenHistory: StateFlow<List<TrackItem>>
+    val listenHistory: StateFlow<List<TrackModel>>
 
     /**
      * 记录一条播放历史
      */
-    fun record(track: TrackItem)
+    fun record(track: TrackModel)
 
     /**
      * 清空收听历史

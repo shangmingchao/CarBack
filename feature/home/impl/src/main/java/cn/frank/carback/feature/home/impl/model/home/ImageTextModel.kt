@@ -8,5 +8,5 @@ import cn.frank.carback.recyclerview.ItemModel
  * @author shangmingchao
  */
 class ImageTextModel(
- val data: String
+    val data: String
 ) : ItemModel

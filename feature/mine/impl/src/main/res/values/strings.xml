@@ -1,5 +1,4 @@
 <resources>
-    <string name="mine_title">我的</string>
-    <string name="mine_go_search">去搜索</string>
-    <string name="mine_clear_history">清空收听记录</string>
+    <string name="mine_history">浏览历史</string>
+    <string name="mine_clear_history">清空浏览历史</string>
 </resources>

@@ -34,7 +34,6 @@ class RecommendViewModel @Inject constructor(
             }.flowOn(Dispatchers.IO)
 
     private fun mockData(id: String, pageNo: Int): Flow<List<String>> = flow {
-        delay(3000)
         emit((1..20).map { "$id-$pageNo-$it-${Random.Default.nextInt(1000000000)}" })
     }
 }

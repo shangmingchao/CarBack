@@ -9,7 +9,11 @@ plugins {
     id("carback-android-hilt")
 }
 
+val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+
 dependencies {
     add("implementation", project(":core:debug-scaffold"))
     add("implementation", project(":core:router"))
+    // demo 壳继承 ScaffoldActivity，需要 appcompat 可见
+    add("implementation", libs.findLibrary("androidx-appcompat").get())
 }
